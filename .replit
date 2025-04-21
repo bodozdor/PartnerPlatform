@@ -31,12 +31,8 @@ args = "./start-expo.sh"
 waitForPort = 8081
 
 [deployment]
-run = ["sh", "-c", "EXPO_NO_WEB=true npx expo start --port 5000"]
+run = ["sh", "-c", "EXPO_NO_WEB=true npx expo start --port 8081"]
 
 [[ports]]
-localPort = 5000
-externalPort = 80
-
-[[ports]]
-localPort = 8081
+exposeLocalhost = 
 externalPort = 8081
