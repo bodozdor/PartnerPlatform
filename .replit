@@ -27,12 +27,12 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "./start-expo.sh"
-waitForPort = 8081
+args = "npx expo start --web --port 5000"
+waitForPort = 5000
 
 [deployment]
-run = ["sh", "-c", "EXPO_NO_WEB=true npx expo start --port 8081"]
+run = ["sh", "-c", "npx expo start --web --port 5000"]
 
 [[ports]]
-exposeLocalhost = 
-externalPort = 8081
+localPort = 5000
+externalPort = 80
