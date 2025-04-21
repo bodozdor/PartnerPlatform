@@ -27,7 +27,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "EXPO_NO_WEB=true npx expo start --host tunnel --port 5000"
+args = "npx expo start --port 5000 --tunnel"
 waitForPort = 5000
 
 [deployment]

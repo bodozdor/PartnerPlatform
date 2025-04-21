@@ -12,15 +12,6 @@
       "tsconfigPaths": true
     },
 
-    "plugins": [
-      [
-        "expo-dev-launcher",
-        {
-          "launchMode": "most-recent"
-        }
-      ]
-    ],
-
     "orientation": "portrait",
     "icon": "./assets/icon.png",
 
