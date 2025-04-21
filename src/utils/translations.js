@@ -301,5 +301,16 @@ export const translations = {
   // Mapbox
   locationPermission: 'Dozvola za lokaciju',
   locationPermissionDenied: 'Dozvola za pristup lokaciji nije odobrena',
-  unableToGetLocation: 'Nije moguće dohvatiti trenutnu lokaciju'
+  unableToGetLocation: 'Nije moguće dohvatiti trenutnu lokaciju',
+  
+  // Web App Notice
+  webAppTitle: 'Za najbolje iskustvo',
+  webAppMessage: 'Molimo preuzmite našu mobilnu aplikaciju za pristup svim funkcionalnostima. Ova aplikacija je optimizirana za mobilne uređaje.',
+  scanQrCode: 'Skenirajte QR kod sa svojim telefonom',
+  webAppFooter: 'Puna funkcionalnost dostupna je samo u našoj mobilnoj aplikaciji.',
+  
+  // Map on Web
+  mapOnlyOnMobile: 'Karta je dostupna samo u mobilnoj aplikaciji.',
+  enterCoordinatesManually: 'Možete unijeti koordinate ručno:',
+  mapNotAvailable: 'Karta nije dostupna.'
 };

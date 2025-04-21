@@ -16,19 +16,22 @@ import { MAPBOX_ACCESS_TOKEN, DEFAULT_REGION, GEOCODING_API_URL } from '../../co
 import { COLORS } from '../../styles/colors';
 import { translations } from '../../utils/translations';
 
-// Import the appropriate version based on platform
+// Dynamic import for maps (only for native)
 let MapView;
 let Marker;
+
+// Only try to import react-native-maps on native platforms
 if (Platform.OS !== 'web') {
-  // Native platforms - use real maps
-  const ReactNativeMaps = require('react-native-maps');
-  MapView = ReactNativeMaps.default;
-  Marker = ReactNativeMaps.Marker;
-} else {
-  // Web platform - use our mock module
-  const WebMaps = require('./react-native-maps-web');
-  MapView = WebMaps.default;
-  Marker = WebMaps.Marker;
+  try {
+    const ReactNativeMaps = require('react-native-maps');
+    MapView = ReactNativeMaps.default;
+    Marker = ReactNativeMaps.Marker;
+  } catch (error) {
+    console.error('Error loading react-native-maps:', error);
+    // Create fallback empty components if import fails
+    MapView = () => null;
+    Marker = () => null;
+  }
 }
 
 const { width } = Dimensions.get('window');
@@ -174,9 +177,17 @@ const LocationPicker = ({
   // Render map content based on platform
   const renderMapContent = () => {
     if (Platform.OS === 'web') {
-      // Web version
+      // Web version - show a message that map is only available in mobile app
       return (
         <View style={styles.webInputContainer}>
+          <Text style={styles.webUnavailableMessage}>
+            {translations.mapOnlyOnMobile || 'Map functionality is only available in the mobile app.'}
+          </Text>
+          
+          <Text style={styles.webCoordinatesLabel}>
+            {translations.enterCoordinatesManually || 'You can enter coordinates manually:'}
+          </Text>
+          
           <View style={styles.webInputRow}>
             <View style={styles.webInputWrapper}>
               <Text style={styles.webInputLabel}>Latitude</Text>
@@ -208,14 +219,6 @@ const LocationPicker = ({
             <Text style={styles.webButtonText}>Set Location</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity
-            style={[styles.webButton, styles.webSecondaryButton]}
-            onPress={handleGetCurrentLocation}
-          >
-            <Feather name="navigation" size={16} color={COLORS.primary} />
-            <Text style={styles.webSecondaryButtonText}>Use Current Location</Text>
-          </TouchableOpacity>
-          
           {address ? (
             <View style={styles.webAddressContainer}>
               <Text style={styles.webAddressLabel}>Address:</Text>
@@ -224,8 +227,8 @@ const LocationPicker = ({
           ) : null}
         </View>
       );
-    } else {
-      // Native version
+    } else if (MapView && Marker) {
+      // Native version - only if MapView was successfully imported
       return (
         <View style={styles.mapContainer}>
           <MapView
@@ -249,6 +252,15 @@ const LocationPicker = ({
           >
             <Feather name="navigation" size={20} color={COLORS.white} />
           </TouchableOpacity>
+        </View>
+      );
+    } else {
+      // Fallback if map components aren't available
+      return (
+        <View style={styles.mapError}>
+          <Text style={styles.mapErrorText}>
+            {translations.mapNotAvailable || 'Map is not available.'}
+          </Text>
         </View>
       );
     }
@@ -433,6 +445,32 @@ const styles = StyleSheet.create({
   webAddressText: {
     fontSize: 14,
     color: COLORS.dark,
+  },
+  webUnavailableMessage: {
+    fontSize: 16,
+    color: COLORS.dark,
+    textAlign: 'center',
+    marginBottom: 15,
+    fontWeight: '500',
+  },
+  webCoordinatesLabel: {
+    fontSize: 14,
+    color: COLORS.grey,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  mapError: {
+    marginTop: 8,
+    padding: 20,
+    backgroundColor: COLORS.lightGrey,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mapErrorText: {
+    fontSize: 14,
+    color: COLORS.dark,
+    textAlign: 'center',
   },
 });
 

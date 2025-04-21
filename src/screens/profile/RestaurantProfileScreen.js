@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useBusiness } from '../../hooks/useBusinessProfile';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
-import LocationPicker from '../../components/common/LocationPickerWeb';
+import LocationPicker from '../../components/common/LocationPickerWrapper';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Header from '../../components/common/Header';
