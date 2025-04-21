@@ -4,13 +4,8 @@
     "slug": "gusht",
     "version": "1.0.0",
     "sdkVersion": "52.0.0",
-    "platforms": ["ios", "android", "web"],
-
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
-    },
-
+    "platforms": ["ios", "android"],
+    
     "experiments": {
       "tsconfigPaths": true
     },
@@ -48,6 +43,9 @@
     "updates": {
       "enabled": true,
       "fallbackToCacheTimeout": 0
-    }
+    },
+    "owner": "anonymous",
+    "scheme": "gusht",
+    "plugins": []
   }
 }
