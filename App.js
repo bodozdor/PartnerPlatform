@@ -1,15 +1,59 @@
-import { Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StatusBar, SafeAreaView, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './src/navigation';
+import { AuthProvider } from './src/context/AuthContext';
+import { BusinessProvider } from './src/context/BusinessContext';
+import { supabase } from './src/config/supabase';
+import LoadingSpinner from './src/components/common/LoadingSpinner';
+import { COLORS } from './src/styles/colors';
 
-// Choose which app implementation to load based on platform
-// This completely isolates the native and web code to prevent import conflicts
+/**
+ * Main application component - focused exclusively on native mobile
+ */
+export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState('Auth');
 
-// For web platform, we use an extremely simple app with absolutely no native dependencies
-if (Platform.OS === 'web') {
-  // No React Native dependencies that could cause problems
-  const SimpleWebNotice = require('./src/SimpleWebNotice').default;
-  module.exports = SimpleWebNotice;
-} else {
-  // Full native implementation for mobile platforms
-  const NativeApp = require('./src/NativeApp').default;
-  module.exports = NativeApp;
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session) {
+        setInitialRoute('Main');
+      }
+      setIsLoading(false);
+    };
+    
+    checkUser();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <LoadingSpinner />
+      </SafeAreaView>
+    );
+  }
+  
+  // Render the native mobile app
+  return (
+    <AuthProvider>
+      <BusinessProvider>
+        <NavigationContainer>
+          <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+          <AppNavigator initialRoute={initialRoute} />
+        </NavigationContainer>
+      </BusinessProvider>
+    </AuthProvider>
+  );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+  },
+});

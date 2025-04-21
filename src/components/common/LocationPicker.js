@@ -6,33 +6,14 @@ import {
   TouchableOpacity, 
   Dimensions,
   Alert,
-  ActivityIndicator,
-  Platform,
-  TextInput
+  ActivityIndicator
 } from 'react-native';
 import * as Location from 'expo-location';
 import { Feather } from '@expo/vector-icons';
 import { MAPBOX_ACCESS_TOKEN, DEFAULT_REGION, GEOCODING_API_URL } from '../../config/supabase';
 import { COLORS } from '../../styles/colors';
 import { translations } from '../../utils/translations';
-
-// Dynamic import for maps (only for native)
-let MapView;
-let Marker;
-
-// Only try to import react-native-maps on native platforms
-if (Platform.OS !== 'web') {
-  try {
-    const ReactNativeMaps = require('react-native-maps');
-    MapView = ReactNativeMaps.default;
-    Marker = ReactNativeMaps.Marker;
-  } catch (error) {
-    console.error('Error loading react-native-maps:', error);
-    // Create fallback empty components if import fails
-    MapView = () => null;
-    Marker = () => null;
-  }
-}
+import MapView, { Marker } from 'react-native-maps';
 
 const { width } = Dimensions.get('window');
 
@@ -150,120 +131,35 @@ const LocationPicker = ({
     setMapVisible(!mapVisible);
   };
   
-  // Web implementation for manual coordinates input
-  const [manualLat, setManualLat] = useState(location ? location.latitude.toString() : '');
-  const [manualLng, setManualLng] = useState(location ? location.longitude.toString() : '');
+  // Native-specific implementation
 
-  const handleManualCoordinates = () => {
-    const latitude = parseFloat(manualLat);
-    const longitude = parseFloat(manualLng);
-    
-    if (isNaN(latitude) || isNaN(longitude)) {
-      Alert.alert(
-        translations.error,
-        'Please enter valid coordinates'
-      );
-      return;
-    }
-    
-    onLocationSelected({
-      latitude,
-      longitude,
-    });
-    
-    fetchAddressFromCoordinates(latitude, longitude);
-  };
-
-  // Render map content based on platform
+  // Render map content - native only implementation
   const renderMapContent = () => {
-    if (Platform.OS === 'web') {
-      // Web version - show a message that map is only available in mobile app
-      return (
-        <View style={styles.webInputContainer}>
-          <Text style={styles.webUnavailableMessage}>
-            {translations.mapOnlyOnMobile || 'Map functionality is only available in the mobile app.'}
-          </Text>
-          
-          <Text style={styles.webCoordinatesLabel}>
-            {translations.enterCoordinatesManually || 'You can enter coordinates manually:'}
-          </Text>
-          
-          <View style={styles.webInputRow}>
-            <View style={styles.webInputWrapper}>
-              <Text style={styles.webInputLabel}>Latitude</Text>
-              <TextInput
-                style={styles.webInput}
-                value={manualLat}
-                onChangeText={setManualLat}
-                keyboardType="numeric"
-                placeholder="41.40338"
-              />
-            </View>
-            <View style={styles.webInputWrapper}>
-              <Text style={styles.webInputLabel}>Longitude</Text>
-              <TextInput
-                style={styles.webInput}
-                value={manualLng}
-                onChangeText={setManualLng}
-                keyboardType="numeric"
-                placeholder="2.17403"
-              />
-            </View>
-          </View>
-          
-          <TouchableOpacity
-            style={styles.webButton}
-            onPress={handleManualCoordinates}
-          >
-            <Feather name="map-pin" size={16} color="#FFF" />
-            <Text style={styles.webButtonText}>Set Location</Text>
-          </TouchableOpacity>
-          
-          {address ? (
-            <View style={styles.webAddressContainer}>
-              <Text style={styles.webAddressLabel}>Address:</Text>
-              <Text style={styles.webAddressText}>{address}</Text>
-            </View>
-          ) : null}
-        </View>
-      );
-    } else if (MapView && Marker) {
-      // Native version - only if MapView was successfully imported
-      return (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            region={region}
-            onPress={handleMapPress}
-          >
-            {location && (
-              <Marker
-                coordinate={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                }}
-              />
-            )}
-          </MapView>
-          
-          <TouchableOpacity
-            style={styles.currentLocationButton}
-            onPress={handleGetCurrentLocation}
-          >
-            <Feather name="navigation" size={20} color={COLORS.white} />
-          </TouchableOpacity>
-        </View>
-      );
-    } else {
-      // Fallback if map components aren't available
-      return (
-        <View style={styles.mapError}>
-          <Text style={styles.mapErrorText}>
-            {translations.mapNotAvailable || 'Map is not available.'}
-          </Text>
-        </View>
-      );
-    }
+    return (
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          region={region}
+          onPress={handleMapPress}
+        >
+          {location && (
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+            />
+          )}
+        </MapView>
+        
+        <TouchableOpacity
+          style={styles.currentLocationButton}
+          onPress={handleGetCurrentLocation}
+        >
+          <Feather name="navigation" size={20} color={COLORS.white} />
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -377,88 +273,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
   },
-  // Web-specific styles
-  webInputContainer: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: COLORS.lightGrey,
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: COLORS.white,
-  },
-  webInputRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  webInputWrapper: {
-    flex: 1,
-    marginRight: 8,
-  },
-  webInputLabel: {
-    fontSize: 12,
-    color: COLORS.grey,
-    marginBottom: 4,
-  },
-  webInput: {
-    borderWidth: 1,
-    borderColor: COLORS.lightGrey,
-    borderRadius: 4,
-    padding: 8,
-    fontSize: 14,
-    color: COLORS.dark,
-  },
-  webButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 4,
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  webButtonText: {
-    color: COLORS.white,
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-  webSecondaryButton: {
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-  },
-  webSecondaryButtonText: {
-    color: COLORS.primary,
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-  webAddressContainer: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.lightGrey,
-  },
-  webAddressLabel: {
-    fontSize: 12,
-    color: COLORS.grey,
-    marginBottom: 4,
-  },
-  webAddressText: {
-    fontSize: 14,
-    color: COLORS.dark,
-  },
-  webUnavailableMessage: {
-    fontSize: 16,
-    color: COLORS.dark,
-    textAlign: 'center',
-    marginBottom: 15,
-    fontWeight: '500',
-  },
-  webCoordinatesLabel: {
-    fontSize: 14,
-    color: COLORS.grey,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  // Native-specific error styling
   mapError: {
     marginTop: 8,
     padding: 20,
