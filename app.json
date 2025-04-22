@@ -3,12 +3,23 @@
     "name": "gusht",
     "slug": "gusht",
     "version": "1.0.0",
-    "sdkVersion": "52.0.0",
-    "platforms": ["ios", "android"],
-    
+
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+
     "experiments": {
       "tsconfigPaths": true
     },
+
+    "plugins": [
+      [
+        "expo-dev-launcher",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
+    ],
 
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,30 +33,13 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.gusht.partner"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.gusht.partner"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "gusht-partner"
       }
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
-    "updates": {
-      "enabled": true,
-      "fallbackToCacheTimeout": 0
-    },
-    "owner": "anonymous",
-    "scheme": "gusht",
-    "plugins": []
+    }
   }
 }

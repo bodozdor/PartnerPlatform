@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { StatusBar, SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,9 +9,6 @@ import { supabase } from './src/config/supabase';
 import LoadingSpinner from './src/components/common/LoadingSpinner';
 import { COLORS } from './src/styles/colors';
 
-/**
- * Main application component - focused exclusively on native mobile
- */
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Auth');
@@ -35,8 +33,7 @@ export default function App() {
       </SafeAreaView>
     );
   }
-  
-  // Render the native mobile app
+
   return (
     <AuthProvider>
       <BusinessProvider>
