@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -17,14 +17,23 @@ import { translations } from '../../utils/translations';
 import { validateEmail, validatePassword } from '../../utils/validation';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useBusiness } from '../../hooks/useBusinessProfile';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = ({ navigation, route }) => {
+  const { setBusinessType } = useBusiness();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  // Get business type from route params if available
+  useEffect(() => {
+    if (route.params?.businessType) {
+      setBusinessType(route.params.businessType);
+    }
+  }, [route.params]);
 
   const handleRegister = async () => {
     // Validate inputs
@@ -67,6 +76,10 @@ const RegisterScreen = ({ navigation }) => {
 
       // Create profile in the database
       if (data.user) {
+        // Get current business type from context
+        const currentBusinessType = route.params?.businessType;
+        
+        // Create user profile with business type (if available)
         const { error: profileError } = await supabase
           .from('profiles')
           .insert([
@@ -74,6 +87,7 @@ const RegisterScreen = ({ navigation }) => {
               id: data.user.id, 
               name, 
               email,
+              business_type: currentBusinessType,
               created_at: new Date(),
             }
           ]);

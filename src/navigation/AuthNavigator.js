@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
+import BusinessTypeScreen from '../screens/BusinessTypeScreen';
 import { COLORS } from '../styles/colors';
 import { translations } from '../utils/translations';
 
@@ -29,6 +30,11 @@ const AuthNavigator = () => {
         name="Login" 
         component={LoginScreen} 
         options={{ title: translations.login }} 
+      />
+      <Stack.Screen 
+        name="BusinessType" 
+        component={BusinessTypeScreen} 
+        options={{ title: translations.selectBusinessType }} 
       />
       <Stack.Screen 
         name="Register" 

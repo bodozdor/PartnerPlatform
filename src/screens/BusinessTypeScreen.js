@@ -62,9 +62,9 @@ const BusinessTypeScreen = ({ navigation }) => {
     },
   ];
 
-  const handleSelectBusinessType = (type, screen) => {
+  const handleSelectBusinessType = (type) => {
     setBusinessType(type);
-    navigation.navigate(screen);
+    navigation.navigate('Register', { businessType: type });
   };
 
   return (
@@ -80,7 +80,7 @@ const BusinessTypeScreen = ({ navigation }) => {
           {businessTypes.map((business) => (
             <TouchableOpacity 
               key={business.id}
-              onPress={() => handleSelectBusinessType(business.id, business.screen)}
+              onPress={() => handleSelectBusinessType(business.id)}
               style={styles.cardWrapper}
             >
               <Card>
